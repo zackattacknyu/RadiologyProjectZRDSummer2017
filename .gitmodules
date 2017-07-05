@@ -1,0 +1,3 @@
+[submodule "initMatlab/imtool3D"]
+	path = initMatlab/imtool3D
+	url = jbs45@roy.duhs.duke.edu:/store/lab/share/repositories/imtool3D.git
