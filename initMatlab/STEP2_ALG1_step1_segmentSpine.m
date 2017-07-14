@@ -10,4 +10,6 @@ bonePixels=double(dcmArrayHU>thresholdForBone);
 
 boneStructure=getLargestComponentImage(bonePixels);
 
+
+
 %writeMATarrayToTiff(boneStructure,'sampleTiff.tif');
