@@ -10,11 +10,11 @@ folderPath='D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET'
 
 patientFolders = os.listdir(folderPath)
 
-ind=1
+displayInd=0
 for ptFolder in patientFolders:
-    print(ind)
-    ind=ind+1
+    displayInd= displayInd + 1
 
+    print("Beginning process for pt " + str(displayInd))
 
     currentFullPath = os.path.join(folderPath,ptFolder)
     currentTxtFile = os.path.join(currentFullPath,'PntFileFullPath.txt')
@@ -29,10 +29,11 @@ for ptFolder in patientFolders:
         contains the data as well as the important
         segmentation information
     """
-    rows = []
 
     #key is patient key. value is matrix of all seg coords
     dictOfSegCoords = {}
+
+    print("Opening CSV file for pt " + str(displayInd))
 
     with open(pntFileFullPath) as csvFile:
         ourReader = csv.DictReader(csvFile)
@@ -47,6 +48,7 @@ for ptFolder in patientFolders:
                     dictOfSegCoords[currentSlice]=[]
                 dictOfSegCoords[currentSlice].append(currentXYcoords)
 
+    print("Obtaining MAT data for pt " + str(displayInd))
 
     matlabFilePath = os.path.join(currentFullPath,'DCM_DATA.mat')
     matlabData = sio.loadmat(matlabFilePath)
@@ -55,8 +57,14 @@ for ptFolder in patientFolders:
 
     segmentedVolume = np.zeros(volumeShape)
 
+    print("Now generating the volume for Pt " + str(displayInd))
+
+    innerLoopIndex=1
     for sliceNum in dictOfSegCoords:
-        print(sliceNum)
+
+        print("Now making slice " + str(innerLoopIndex) + " of " + str(len(dictOfSegCoords)))
+        innerLoopIndex = innerLoopIndex+1
+
         polyPts = dictOfSegCoords[sliceNum]
         polyPts.append(polyPts[0])
         polyPtsArray = np.array(polyPts)
@@ -85,3 +93,5 @@ for ptFolder in patientFolders:
     outputFileFullPath=os.path.join(currentFullPath,'DCM_DATA_SEGMENTATION_VOLUME.mat')
 
     sio.savemat(outputFileFullPath,{"segVolume":segmentedVolume})
+
+    print("Finished generating volume for Pt " + str(displayInd))
