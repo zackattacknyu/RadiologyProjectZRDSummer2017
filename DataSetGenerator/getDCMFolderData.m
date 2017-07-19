@@ -1,4 +1,4 @@
-function [ dcmData,dcmArray,dcmArrayHU,slope,intercept,dcmInfoArray ] = getDCMFolderData_multiChannel( dirName )
+function [ dcmData,dcmArray,dcmArrayHU,slope,intercept,dcmInfoArray ] = getDCMFolderData( dirName )
 %GETDCMFOLDERDATA Summary of this function goes here
 %   dcmData - puts the matrices into a cell
 %   dcmAray - makes a large array
@@ -42,14 +42,8 @@ dcmData = dcmData(sortedLocs);
 dcmInfoArray = dcmInfoArray(sortedLocs);
 
 dcmArray = zeros([size(dcmData{1}) length(dcmData)]);
-if(numel(size(dcmArray))==3)
-    for k = 1:length(dcmData)
-       dcmArray(:,:,k) = dcmData{k};
-    end
-elseif(numel(size(dcmArray))==4)
-    for k = 1:length(dcmData)
-       dcmArray(:,:,:,k) = dcmData{k};
-    end
+for k = 1:length(dcmData)
+   dcmArray(:,:,k) = dcmData{k};
 end
 
 %does the Hounsfeld Unit conversion
