@@ -11,12 +11,20 @@ folderPath='D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET'
 patientFolders = os.listdir(folderPath)
 
 displayInd=0
-for ptFolder in patientFolders:
-    displayInd= displayInd + 1
+for dIndex in range(77,len(patientFolders)):
+    ptFolder=patientFolders[dIndex]
+    displayInd=dIndex+1
 
     print("Beginning process for pt " + str(displayInd))
 
+
     currentFullPath = os.path.join(folderPath,ptFolder)
+
+    matlabFilePath = os.path.join(currentFullPath, 'DCM_DATA.mat')
+    if (not os.path.exists(matlabFilePath)):
+        print("Pt has no .MAT file. Moving on")
+        continue
+
     currentTxtFile = os.path.join(currentFullPath,'PntFileFullPath.txt')
     pntFileFullPath=open(currentTxtFile).read()
 
@@ -39,7 +47,7 @@ for ptFolder in patientFolders:
         ourReader = csv.DictReader(csvFile)
         for row in ourReader:
             currentPtKey = row['CTSeriesName']
-            if(seriesName in currentPtKey):
+            if(seriesName and currentPtKey and seriesName in currentPtKey):
                 currentSlice = int(row['CTSlice'])
                 currentCol = int(row['CTColumn'])
                 currentRow = int(row['CTRow'])
@@ -50,7 +58,8 @@ for ptFolder in patientFolders:
 
     print("Obtaining MAT data for pt " + str(displayInd))
 
-    matlabFilePath = os.path.join(currentFullPath,'DCM_DATA.mat')
+
+
     matlabData = sio.loadmat(matlabFilePath)
     rawDataArray = matlabData['dcmArrayHU']
     volumeShape = rawDataArray.shape
@@ -69,12 +78,17 @@ for ptFolder in patientFolders:
         polyPts.append(polyPts[0])
         polyPtsArray = np.array(polyPts)
 
+        minR = np.min(polyPtsArray[:,0])
+        maxR = np.max(polyPtsArray[:, 0])
+        minC = np.min(polyPtsArray[:,1])
+        maxC = np.max(polyPtsArray[:, 1])
+
         polygonPath = mplPath.Path(polyPtsArray)
 
         #fills in the path of the polygon
         matrixArray = np.zeros((volumeShape[0],volumeShape[1]))
-        for ii in range(volumeShape[0]):
-            for jj in range(volumeShape[1]):
+        for ii in range(minR,maxR+1):
+            for jj in range(minC,maxC+1):
                 if(polygonPath.contains_point([ii,jj])):
                     matrixArray[ii,jj]=1
 
