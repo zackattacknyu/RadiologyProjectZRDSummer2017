@@ -27,6 +27,7 @@ for folderIndex=1:length(patientFolders)
       warning('off','all');
       [ ~,~,dcmArrayHU,~,~,dcmInfoArray ] = getDCMFolderData_multiChannel( currentPathOfRawDCM );
       filePathMAT = strcat(currentFolderPath,'\DCM_DATA.mat');
-      save(filePathMAT,'dcmArrayHU','dcmInfoArray');
+      save(filePathMAT,'dcmArrayHU');
+      %save(filePathMAT,'dcmArrayHU','dcmInfoArray');
    end
 end

@@ -12,3 +12,4 @@ def getColumnNumber(letterCode):
 
 def getDistFromA(curLetter):
     return ord(curLetter)-ord('A')
+

@@ -11,7 +11,7 @@ folderPath='D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET'
 patientFolders = os.listdir(folderPath)
 
 displayInd=0
-for dIndex in range(77,len(patientFolders)):
+for dIndex in range(len(patientFolders)):
     ptFolder=patientFolders[dIndex]
     displayInd=dIndex+1
 
