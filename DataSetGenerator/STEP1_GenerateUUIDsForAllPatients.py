@@ -22,6 +22,11 @@ def generateUUID():
 inputDatSetRootPath= 'D:\DATA\PET_Spine_Lesions\PET CT Spine Cases 2015'
 outputDataSetRootPath = 'D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET'
 
+outputTablePath = 'D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET_table.csv'
+outputTableCSV = open(outputTablePath,'w')
+
+
+
 def processPntFile(pntFilePath):
     print("Now processing " + pntFilePath)
     filePathsInPntFile = set()
