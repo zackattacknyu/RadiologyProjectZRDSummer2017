@@ -24,7 +24,7 @@ outputDataSetRootPath = 'D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET'
 
 outputTablePath = 'D:\DATA\SPINE_LESIONS_GENERATED_DATA_SET_table.csv'
 outputTableCSV = open(outputTablePath,'w')
-
+outputTableCSV.write('FolderName,DataPathListedInPntFile,FullPathToRawData,FullPathToPntFile\n')
 
 
 def processPntFile(pntFilePath):
@@ -60,6 +60,8 @@ def processPntFile(pntFilePath):
                 with open(pntFileFullPathTextFile,'w') as txtFile2:
                     txtFile2.write(pntFilePath)
 
+                outputTableCSV.write(folderName+","+dataPath+","+fullPathToData+","+pntFilePath+"\n")
+
 
 def processDirectory(currentRoot):
     files = os.listdir(currentRoot)
@@ -73,4 +75,4 @@ def processDirectory(currentRoot):
             processPntFile(currentPath)
 
 processDirectory(inputDatSetRootPath)
-
+outputTableCSV.close()
