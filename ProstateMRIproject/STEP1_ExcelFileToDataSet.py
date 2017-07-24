@@ -15,15 +15,26 @@ import HelperFunctions
 from datetime import datetime
 from datetime import date
 from matplotlib import pyplot as plt
+import DataSetLogic
 
-prostateFilePath='D:/DATA/rouProstateFiles/ROU_LESION_DATA_EXCELFILE.xlsx'
+INITIAL_ROW_NUMBER=5
+DATA_WORKSHEET_NAME='Sheet1'
+PROSTATE_FILE_PATH= 'D:/DATA/rouProstateFiles/ROU_LESION_DATA_EXCELFILE.xlsx'
 
-excelData = openpyxl.load_workbook(prostateFilePath)
-dataOnSheet = excelData['Sheet1']
+excelData = openpyxl.load_workbook(PROSTATE_FILE_PATH)
+dataOnSheet = excelData[DATA_WORKSHEET_NAME]
 
-# for rowI in range(5,10):
-#     cellKey = 'H'+str(rowI)
-#     print(dataOnSheet[cellKey].value)
+def getCellKey(columnCodeStr,rowInteger):
+    return columnCodeStr+str(rowInteger)
+
+def getAllStringsForCol(columnCodeStr):
+    allStrs = []
+    for rowI in range(INITIAL_ROW_NUMBER, dataOnSheet.max_row):
+        cellKey = getCellKey(columnCodeStr, rowI)
+        ageCellContents = dataOnSheet[cellKey].value
+        allStrs.append(ageCellContents)
+    return allStrs
+
 
 """
 This will give us Age at Time of MRI
@@ -31,53 +42,27 @@ Column H contains that data
 If column H missing, do the following:
     Column C is date of MRI, Column G is date of birth
 """
-
 ageOfPatients = []
-for rowI in range(5,dataOnSheet.max_row):
-    cellKey= 'H'+str(rowI)
-    cellContents = dataOnSheet[cellKey].value
-    currentAge=0
-    try:
-        currentAge=float(cellContents)
-    except:
-
-        #obtains date of birth string
-        dobCellKey='G'+str(rowI)
-        dobCellValue = dataOnSheet[dobCellKey].value
-
-        # obtains date of mri string
-        dateOfMRIcellKey = 'C' + str(rowI)
-        dateOfMRIcellString = dataOnSheet[dateOfMRIcellKey].value
-
-        if(dobCellValue and dateOfMRIcellString):
-
-            #obtains date of mri
-            dateOfMRIcellValue = dateOfMRIcellString.date()
-
-            #obtain DOB
-            dobEntries = dobCellValue.split("/")
-            dobDate = date(int(dobEntries[2]),int(dobEntries[0]),int(dobEntries[1]))
-
-            #obtains the age at time of MRI
-            diffBetweenBirthAndMRI = dateOfMRIcellValue-dobDate
-            currentAge = diffBetweenBirthAndMRI.days/365 #gets the floor, what we want
-
+ageCellContentsList = getAllStringsForCol('H')
+dobCellValueList = getAllStringsForCol('G')
+dateOfMRIcellStrList = getAllStringsForCol('C')
+for listInd in range(len(ageCellContentsList)):
+    currentAge = DataSetLogic.obtainAgeFromDOBFields(
+        ageCellContentsList[listInd],
+        dobCellValueList[listInd],
+        dateOfMRIcellStrList[listInd])
     ageOfPatients.append(currentAge)
-
 ageAtMriFeature = np.array(ageOfPatients)
 print(ageAtMriFeature.shape)
+
 
 """
 This will give us the BMI of patients
 """
 bmiOfPatients = []
-for rowI in range(5,dataOnSheet.max_row):
-    cellKey = 'J'+str(rowI)
-    bmiCellStr = dataOnSheet[cellKey].value
-    try:
-        bmiValue=float(bmiCellStr)
-    except:
-        bmiValue = 0
+allBMIstrings = getAllStringsForCol('J')
+for listInd in range(len(allBMIstrings)):
+    bmiValue = DataSetLogic.obtainNumericFieldValue(allBMIstrings[listInd])
     bmiOfPatients.append(bmiValue)
 bmiFeature = np.array(bmiOfPatients)
 print(bmiFeature.shape)
@@ -92,21 +77,18 @@ Entries will be the following:
     3: Asian
     4: Asian/Pacific
     5: Amer Indian/Eskio
-TODO: Setup this logic
 """
-raceOfPts = []
-raceOfPtsSet = set()
-for rowI in range(5,dataOnSheet.max_row):
-    cellKey='I'+str(rowI)
-    raceStr=dataOnSheet[cellKey].value
-    raceOfPts.append(raceStr)
-    raceOfPtsSet.add(raceStr)
+raceOfPtsCatNums = []
+raceCategories = {"white":1,"black":2,"asian":3,"asian/pacific":4,"amer indian/eskimo":5}
+raceOfPtsAllEntries = getAllStringsForCol('I')
+for listInd in range(len(raceOfPtsAllEntries)):
+    raceNum = DataSetLogic.obtainCategoryFieldValue(raceOfPtsAllEntries[listInd], raceCategories)
+    raceOfPtsCatNums.append(raceNum)
+raceFeature = np.array(raceOfPtsCatNums)
+print(raceFeature.shape)
+# for num in range(-1,6):
+#     print(len(np.where(raceFeature==num)[0]))
 
-print(raceOfPtsSet)
-#plt.plot(ageAtMriFeature,bmiFeature,'r.')
-#plt.show()
 
-# dobColumn = HelperFunctions.getColumnNumber('H')
-# for row in dataOnSheet.iter_rows(min_row=5,max_row=dataOnSheet.get_highest_row(),min_col=dobColumn,max_col=dobColumn):
-#     for cell in row:
-#         print(cell.value)
+
+
