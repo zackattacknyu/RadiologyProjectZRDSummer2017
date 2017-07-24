@@ -34,3 +34,36 @@ def obtainCategoryFieldValue(cellString2,categoryDictionary):
         return categoryDictionary[cellString]
     else:
         return -1
+
+def obtainResultYesNoValue(cellStringOrig,missingDataStrs):
+    if(not cellStringOrig):
+        return 0
+    cellString = str(cellStringOrig).lower()
+    for missingIndicator in missingDataStrs:
+        if missingIndicator in cellString:
+            return -1
+    if "1" in cellString:
+        return 1
+    else:
+        return 0
+
+def obtainGleasonScoreFeatures(originalString):
+    scoreStrings = set()
+    for token1 in str(originalString).split(';'):
+        for token2 in token1.split():
+            if "+" in token2:
+                scoreStrings.add(token2)
+    currentMoreDomOutput=0
+    currentLessDomOutput=0
+    maxTotalScore=0
+    for scoreStr in scoreStrings:
+        scoreDigits = scoreStr.split("+")
+        moreDominantDigit = int(scoreDigits[0])
+        lessDominantDigit = int(scoreDigits[1])
+        currentTotalScore = moreDominantDigit+lessDominantDigit
+        if( (currentTotalScore==maxTotalScore and moreDominantDigit>currentMoreDomOutput) or
+                (currentTotalScore>maxTotalScore)):
+            maxTotalScore=currentTotalScore
+            currentMoreDomOutput=moreDominantDigit
+            currentLessDomOutput=lessDominantDigit
+    return currentMoreDomOutput,currentLessDomOutput

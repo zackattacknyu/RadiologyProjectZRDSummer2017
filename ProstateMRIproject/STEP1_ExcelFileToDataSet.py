@@ -7,6 +7,9 @@ CC, CI, CN, CO, CU, CV, CW, CX, CY, CZ
 DA, DC, DD, DE, DF, DG, DH, DI, DK, DL, DN, DT, DU, DV, DW, DX, DY, DZ
 EA, EB, EC, ED, EE, EF, EG, EH, ER, ES, ET, EV, EW, EY
 FC, FD, FE, FF, FG, FH, FI, FK, FL, FM, FN, FO, FP, FQ, FR, FS, FT, FU, FV
+
+NOTE:
+    MISSING DATA WILL BE GIVEN VALUE -1 IN THE DATA SET
 """
 
 import numpy as np
@@ -34,6 +37,13 @@ def getAllStringsForCol(columnCodeStr):
         ageCellContents = dataOnSheet[cellKey].value
         allStrs.append(ageCellContents)
     return allStrs
+
+def TESTFUNC_printUniqueEntries(stringArray):
+    returnSet = set()
+    for str1 in stringArray:
+        returnSet.add(str1)
+    for entry in returnSet:
+        print(entry)
 
 
 """
@@ -67,6 +77,7 @@ for listInd in range(len(allBMIstrings)):
 bmiFeature = np.array(bmiOfPatients)
 print(bmiFeature.shape)
 
+
 """
 This tells the race of patients
 
@@ -86,9 +97,50 @@ for listInd in range(len(raceOfPtsAllEntries)):
     raceOfPtsCatNums.append(raceNum)
 raceFeature = np.array(raceOfPtsCatNums)
 print(raceFeature.shape)
-# for num in range(-1,6):
-#     print(len(np.where(raceFeature==num)[0]))
 
 
+"""
+Column L: Prior Outside Biopsy
+If string contains "no notes", "unknown" or "n/a" then missing data, make it -1
+else if string contains "1" then make value 1, meaning yes
+else make it "0" for no prior biopsy
+"""
+allPriorOutside = getAllStringsForCol('L')
+#TESTFUNC_printUniqueEntries(allPriorOutside)
+priorOutsideValues =[]
+for listInd in range(len(allPriorOutside)):
+    priorOutsideValues.append(DataSetLogic.obtainResultYesNoValue(
+        allPriorOutside[listInd],['no notes','unknown','n/a']))
+priorOutsideFeature = np.array(priorOutsideValues)
+print(priorOutsideFeature.shape)
 
 
+"""
+Column M: Prior Result
+Same logic as L
+"""
+allPriorResult = getAllStringsForCol('M')
+#TESTFUNC_printUniqueEntries(allPriorResult)
+priorResult =[]
+for listInd in range(len(allPriorOutside)):
+    priorResult.append(DataSetLogic.obtainResultYesNoValue(
+        allPriorOutside[listInd],['no notes','unknown','n/a']))
+priorResultFeature = np.array(priorResult)
+print(priorResultFeature.shape)
+
+
+"""
+Column N: Gleason Score
+Logic will be as follows:
+    -Split string by space and semi-colon
+TODO: DETAIL LOGIC MORE
+"""
+gleasonScores = getAllStringsForCol('N')
+gleasonScoreMoreDom=[]
+gleasonScoreLessDom=[]
+for listInd in range(len(gleasonScores)):
+    moredom,lessdom=DataSetLogic.obtainGleasonScoreFeatures(gleasonScores[listInd])
+    gleasonScoreMoreDom.append(moredom)
+    gleasonScoreLessDom.append(lessdom)
+gleasonScoreMoreDomFeature = np.array(gleasonScoreMoreDom)
+gleasonScoreLessDomFeature = np.array(gleasonScoreLessDom)
