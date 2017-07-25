@@ -45,6 +45,14 @@ def TESTFUNC_printUniqueEntries(stringArray):
     for entry in returnSet:
         print(entry)
 
+def get0_to_N_or_missingFeature(columnCodeStr, Nval):
+    dataInCol = getAllStringsForCol(columnCodeStr)
+    colDataRes = []
+    for listInd in range(len(dataInCol)):
+        colDataRes.append(DataSetLogic.obtainResult_0_N_or_missing(dataInCol[listInd],Nval))
+    featureData = np.array(colDataRes)
+    return featureData
+
 
 """
 This will give us Age at Time of MRI
@@ -133,7 +141,10 @@ print(priorResultFeature.shape)
 Column N: Gleason Score
 Logic will be as follows:
     -Split string by space and semi-colon
-TODO: DETAIL LOGIC MORE
+    -Use the strings in the form A+B
+    -Use whichever one has highest C = A+B
+        - If there is a tie, use one with higher A
+If either feature is -1, then there is missing data
 """
 gleasonScores = getAllStringsForCol('N')
 gleasonScoreMoreDom=[]
@@ -144,3 +155,26 @@ for listInd in range(len(gleasonScores)):
     gleasonScoreLessDom.append(lessdom)
 gleasonScoreMoreDomFeature = np.array(gleasonScoreMoreDom)
 gleasonScoreLessDomFeature = np.array(gleasonScoreLessDom)
+
+
+"""
+Column Q: Digital Rectal Exam score
+Column S: Pre-biopsy clinical information assay
+Column U: TODO: FILL THIS IN
+Column W: Assay
+Column Y: Assay Result
+Column Z: Risk of High Grade Caner
+    - 0,1,or missing
+"""
+dreResultFeature = get0_to_N_or_missingFeature('Q',1)
+preBiopsyFeature = get0_to_N_or_missingFeature('S',1)
+colUfeature = get0_to_N_or_missingFeature('U',1)
+colWfeature = get0_to_N_or_missingFeature('W',1)
+colYfeature = get0_to_N_or_missingFeature('Y',1)
+riskOfHighGradeCancerFeature = get0_to_N_or_missingFeature('Z',1)
+
+
+"""
+Column AA
+"""
+colAAfeature = get0_to_N_or_missingFeature('AA',3)

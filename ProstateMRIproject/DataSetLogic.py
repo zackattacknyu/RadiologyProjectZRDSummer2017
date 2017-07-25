@@ -47,14 +47,25 @@ def obtainResultYesNoValue(cellStringOrig,missingDataStrs):
     else:
         return 0
 
+
+def obtainResult_0_N_or_missing(cellStringOrig,Nvalue):
+    try:
+        cellValue = int(cellStringOrig)
+        if(cellValue>=0 and cellValue <= Nvalue):
+            return cellValue
+        else:
+            return -1
+    except:
+        return -1
+
 def obtainGleasonScoreFeatures(originalString):
     scoreStrings = set()
     for token1 in str(originalString).split(';'):
         for token2 in token1.split():
             if "+" in token2:
                 scoreStrings.add(token2)
-    currentMoreDomOutput=0
-    currentLessDomOutput=0
+    currentMoreDomOutput=-1
+    currentLessDomOutput=-1
     maxTotalScore=0
     for scoreStr in scoreStrings:
         scoreDigits = scoreStr.split("+")
