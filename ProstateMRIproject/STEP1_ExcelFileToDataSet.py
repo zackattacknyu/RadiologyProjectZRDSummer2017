@@ -10,6 +10,12 @@ FC, FD, FE, FF, FG, FH, FI, FK, FL, FM, FN, FO, FP, FQ, FR, FS, FT, FU, FV
 
 NOTE:
     MISSING DATA WILL BE GIVEN VALUE -1 IN THE DATA SET
+
+IMPORTANT CODING NOTE:
+    THIS CODE USING FUNCTIONAL PROGRAMMING FEATURES
+    MEANING THAT FUNCTIONS ARE PASSED AS ARGUMENTS
+    THERE IS A GOOD EXAMPLE IN THIS WEBPAGE SHOWING ITS USE IN PYTHON:
+        https://stackoverflow.com/questions/706721/how-do-i-pass-a-method-as-a-parameter-in-python
 """
 
 import numpy as np
@@ -45,13 +51,24 @@ def TESTFUNC_printUniqueEntries(stringArray):
     for entry in returnSet:
         print(entry)
 
-def get0_to_N_or_missingFeature(columnCodeStr, Nval):
+def OBTAIN_FEATURE_COLUMN(columnCodeStr,functionForFeatureLogic,*functionArgs):
     dataInCol = getAllStringsForCol(columnCodeStr)
     colDataRes = []
     for listInd in range(len(dataInCol)):
-        colDataRes.append(DataSetLogic.obtainResult_0_N_or_missing(dataInCol[listInd],Nval))
+        colDataRes.append(functionForFeatureLogic(dataInCol[listInd], *functionArgs))
     featureData = np.array(colDataRes)
     return featureData
+
+def get0_to_N_or_missingFeature(columnCodeStr, Nval):
+    return OBTAIN_FEATURE_COLUMN(columnCodeStr,DataSetLogic.obtainResult_0_N_or_missing,Nval)
+
+
+def getNumericValueFeature(columnCodeStr):
+    return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainNumericFieldValue)
+
+
+def getPercentageValueFeature(columnCodeStr):
+    return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainPercentageFieldValue)
 
 
 """
@@ -77,12 +94,7 @@ print(ageAtMriFeature.shape)
 """
 This will give us the BMI of patients
 """
-bmiOfPatients = []
-allBMIstrings = getAllStringsForCol('J')
-for listInd in range(len(allBMIstrings)):
-    bmiValue = DataSetLogic.obtainNumericFieldValue(allBMIstrings[listInd])
-    bmiOfPatients.append(bmiValue)
-bmiFeature = np.array(bmiOfPatients)
+bmiFeature = getNumericValueFeature('J')
 print(bmiFeature.shape)
 
 
@@ -178,3 +190,16 @@ riskOfHighGradeCancerFeature = get0_to_N_or_missingFeature('Z',1)
 Column AA
 """
 colAAfeature = get0_to_N_or_missingFeature('AA',3)
+
+
+"""
+Column AB
+"""
+colABfeature = get0_to_N_or_missingFeature('AB',1)
+
+
+"""
+Column AD, percentage risk of high grade tumors
+"""
+colADfeature = getPercentageValueFeature('AD')
+print(colADfeature.shape)

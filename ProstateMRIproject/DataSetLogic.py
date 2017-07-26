@@ -47,6 +47,19 @@ def obtainResultYesNoValue(cellStringOrig,missingDataStrs):
     else:
         return 0
 
+"""
+The logic for these columns is as follows:
+    1. If value is less than 1 then use it
+    2. If the value is greater than 1, 
+        then divide it by 100
+"""
+def obtainPercentageFieldValue(percentageString):
+    numericValue = obtainNumericFieldValue(percentageString)
+    if(numericValue>1):
+        return numericValue/100
+    else:
+        return numericValue
+
 
 def obtainResult_0_N_or_missing(cellStringOrig,Nvalue):
     try:

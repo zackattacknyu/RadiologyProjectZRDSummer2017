@@ -1,4 +1,4 @@
-currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/0affd33ex0270x4491x8dcbxca07f616f217/';
+%MAKE WINDOW 1500, MAKE LEVEL 500 to see the contrast
 
 %{
 In slice 128, there seems to be lesion and the shape of the lesion mask
@@ -6,7 +6,31 @@ In slice 128, there seems to be lesion and the shape of the lesion mask
     incorrect. 
 TODO: CHECK the row, column coord system in pnt files
 %}
+%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/0affd33ex0270x4491x8dcbxca07f616f217/';
 
+%{
+In slice 180 of the CT scan in this folder there is a large lesion
+%}
+%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/1ca9e9efxab7ax4b2fxa0fbx1565ecb72c5d/';
+
+%{
+another example: 2dbbde86x8ef8x4e32xb898xc23fcee3a04f
+slice 106,129 has a lesion
+%}
+%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/2dbbde86x8ef8x4e32xb898xc23fcee3a04f/';
+
+%{
+another example: 3b186cb7xd17ax43d8xbb62x597a42342edb
+Slide 111,159 has large lesions
+Slide 190 has an especially large lesion
+%}
+currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/3b186cb7xd17ax43d8xbb62x597a42342edb/';
+
+%{
+another one: 3ba57e08x84a0x4d49x8205x57a79d6cad98
+slice 97 has lesion
+%}
+%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/3ba57e08x84a0x4d49x8205x57a79d6cad98/';
 
 boneFile='DCM_DATA_BONE_SEG_MASK.mat';
 boneFileFull = strcat(currentFolder,boneFile);
@@ -31,12 +55,14 @@ dcmDataWithLesionsUpped(lesionInds)=2000;
 
 
 
-imtool3D(dcmDataWithLesionsUpped)
-imtool3D(dcmArrayHU)
+h1=imtool3D(dcmDataWithLesionsUpped);
+setWindowLevel(h1,1500,500);
+h2=imtool3D(dcmArrayHU);
+setWindowLevel(h2,1500,500);
 
 dcmDataWithBonesUpped = dcmArrayHU;
 dcmDataWithBonesUpped(boneInds)=2000;
-imtool3D(dcmDataWithBonesUpped);
+%imtool3D(dcmDataWithBonesUpped);
 
 %%
 initFolder='D:\DATA\PET_Spine_Lesions\PET CT Spine Cases 2015\';
