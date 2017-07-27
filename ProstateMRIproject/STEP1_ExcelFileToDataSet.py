@@ -28,7 +28,7 @@ import DataSetLogic
 
 INITIAL_ROW_NUMBER=5
 DATA_WORKSHEET_NAME='Sheet1'
-PROSTATE_FILE_PATH= 'D:/DATA/rouProstateFiles/ROU_LESION_DATA_EXCELFILE.xlsx'
+PROSTATE_FILE_PATH= 'D:/DATA/rouProstateFiles/ROU_LESION_DATA_modified.xlsx'
 
 excelData = openpyxl.load_workbook(PROSTATE_FILE_PATH)
 dataOnSheet = excelData[DATA_WORKSHEET_NAME]
@@ -203,3 +203,10 @@ Column AD, percentage risk of high grade tumors
 """
 colADfeature = getPercentageValueFeature('AD')
 print(colADfeature.shape)
+
+
+"""
+Column AI
+"""
+colAIvalues = getAllStringsForCol('AI')
+TESTFUNC_printUniqueEntries(colAIvalues)

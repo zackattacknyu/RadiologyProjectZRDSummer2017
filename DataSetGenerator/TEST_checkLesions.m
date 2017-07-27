@@ -4,14 +4,13 @@
 In slice 128, there seems to be lesion and the shape of the lesion mask
     appears to be correct, however the location of the lesion mask appears
     incorrect. 
-TODO: CHECK the row, column coord system in pnt files
 %}
 %currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/0affd33ex0270x4491x8dcbxca07f616f217/';
 
 %{
 In slice 180 of the CT scan in this folder there is a large lesion
 %}
-%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/1ca9e9efxab7ax4b2fxa0fbx1565ecb72c5d/';
+currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/1ca9e9efxab7ax4b2fxa0fbx1565ecb72c5d/';
 
 %{
 another example: 2dbbde86x8ef8x4e32xb898xc23fcee3a04f
@@ -24,7 +23,7 @@ another example: 3b186cb7xd17ax43d8xbb62x597a42342edb
 Slide 111,159 has large lesions
 Slide 190 has an especially large lesion
 %}
-currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/3b186cb7xd17ax43d8xbb62x597a42342edb/';
+%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/3b186cb7xd17ax43d8xbb62x597a42342edb/';
 
 %{
 another one: 3ba57e08x84a0x4d49x8205x57a79d6cad98
@@ -45,7 +44,8 @@ rawDataFull=strcat(currentFolder,rawData);
 load(rawDataFull);
 %imtool3D(dcmArrayHU);
 
-lesionInds = find(lesionMaskVolume>0);
+lesionMaskVolume2 = flip(lesionMaskVolume,3); %convert between coord systems
+lesionInds = find(lesionMaskVolume2>0);
 boneInds = find(boneStructure>0);
 boneMaskAtLesions = boneStructure(lesionInds);
 numberLesionPixelsInBone = length(find(boneMaskAtLesions>0));
@@ -83,6 +83,7 @@ dcmDataWithLesionsUpped2 = dcmArrayHU;
 
 %Pixel Spacing is 1.3672
 %seeing if that is part of the reason for the offset
+%{
 for sli = 1:size(lesionMaskVolume,3)
     for row=1:size(lesionMaskVolume,1)
        for col=1:size(lesionMaskVolume,2)
@@ -90,6 +91,20 @@ for sli = 1:size(lesionMaskVolume,3)
                rowN = floor(row/1.3672);
                colN = floor(col/1.3672);
                dcmDataWithLesionsUpped2(rowN,colN,sli)=2000;
+            end
+       end
+    end
+end
+%}
+
+%flipping the slice coordinates to see if that is the problem
+%   IT WAS THE PROBLEM!
+numSlice=size(lesionMaskVolume,3);
+for sli = 1:size(lesionMaskVolume,3)
+    for row=1:size(lesionMaskVolume,1)
+       for col=1:size(lesionMaskVolume,2)
+            if(lesionMaskVolume(row,col,sli)>0)
+               dcmDataWithLesionsUpped2(row,col,numSlice-sli+1)=2000;
             end
        end
     end

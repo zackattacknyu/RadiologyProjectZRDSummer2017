@@ -91,3 +91,4 @@ def obtainGleasonScoreFeatures(originalString):
             currentMoreDomOutput=moreDominantDigit
             currentLessDomOutput=lessDominantDigit
     return currentMoreDomOutput,currentLessDomOutput
+

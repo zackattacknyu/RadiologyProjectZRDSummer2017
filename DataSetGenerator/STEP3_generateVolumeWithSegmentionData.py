@@ -65,6 +65,7 @@ for dIndex in range(len(patientFolders)):
     volumeShape = rawDataArray.shape
 
     segmentedVolume = np.zeros(volumeShape)
+    totalNumSlices=volumeShape[2]
 
     print("Now generating the volume for Pt " + str(displayInd))
 
@@ -102,7 +103,8 @@ for dIndex in range(len(patientFolders)):
                 maxIndex = np.max(rowData)
                 matrixArray[ii,minIndex:maxIndex]=1
 
-        segmentedVolume[:,:,sliceNum]=matrixArray
+        #the slice coordinates are flipped
+        segmentedVolume[:,:,totalNumSlices-sliceNum]=matrixArray
 
     outputFileFullPath=os.path.join(currentFullPath,'DCM_DATA_SEGMENTATION_VOLUME.mat')
 
