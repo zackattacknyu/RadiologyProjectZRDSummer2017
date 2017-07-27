@@ -1,5 +1,6 @@
 import datetime
 from datetime import date
+import numpy as np
 
 def obtainAgeFromDOBFields(ageCellContents,dobCellValue,dateOfMRIcellString):
     currentAge = 0
@@ -91,4 +92,35 @@ def obtainGleasonScoreFeatures(originalString):
             currentMoreDomOutput=moreDominantDigit
             currentLessDomOutput=lessDominantDigit
     return currentMoreDomOutput,currentLessDomOutput
+
+def obtainDateFromString(originalString):
+    try:
+        return originalString.date()
+    except:
+
+        try:
+            # If the format is <Month written out> <Year>
+            strWithoutTilda = originalString.replace("~", "")
+
+            strParts = strWithoutTilda.split(" ")
+            monthPart0 = strParts[0]
+            monthPart = monthPart0[0:3].lower()
+            yearPart = strParts[1]
+
+            return datetime.datetime.strptime(monthPart + " 15 " + yearPart,"%b %d %Y")
+
+        except:
+            return -1
+
+def obtainTimeSinceLastProcedure(lastProcedureDateString,currentDateString):
+    try:
+        currentDate = obtainDateFromString(currentDateString)
+        lastProcDate = obtainDateFromString(lastProcedureDateString)
+        if(currentDate==-1 or lastProcDate==-1):
+            return -1
+        timeSinceLast = currentDate-lastProcDate
+        return np.abs(timeSinceLast.days)
+    except:
+        return -1
+
 

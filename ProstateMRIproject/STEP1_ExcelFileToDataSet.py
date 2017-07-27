@@ -70,6 +70,42 @@ def getNumericValueFeature(columnCodeStr):
 def getPercentageValueFeature(columnCodeStr):
     return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainPercentageFieldValue)
 
+def getTimeSinceFeature(lastProcDateColumnCode,currentDateColumnCode):
+    colAIvalues = getAllStringsForCol(lastProcDateColumnCode)
+    colCvalues = getAllStringsForCol(currentDateColumnCode)
+    featureVals = []
+    for index in range(len(colAIvalues)):
+        currentDate = colCvalues[index]
+        lastProcDate = colAIvalues[index]
+        timeSinceLast = DataSetLogic.obtainTimeSinceLastProcedure(lastProcDate,currentDate)
+        featureVals.append(timeSinceLast)
+    return np.array(featureVals)
+
+def getBackfillPercentageFeature(percentageFeature,numeratorFeature,denominatorFeature):
+    outputFeature = []
+    for index1 in range(len(percentageFeature)):
+        percentage = percentageFeature[index1]
+        if(percentage<0):
+            numer = float(numeratorFeature[index1])
+            denom = float(numeratorFeature[index1])
+            if(numer>0 and denom>0):
+                outputFeature.append(numer/denom)
+            else:
+                outputFeature.append(-1)
+        else:
+            outputFeature.append(percentage)
+    return np.array(outputFeature)
+
+def getCategoryFeature(columnCodeStr,categoryDictionary):
+    allCategoryNums = []
+    allCatEntries = getAllStringsForCol(columnCodeStr)
+    for listInd in range(len(allCatEntries)):
+        catNum = DataSetLogic.obtainCategoryFieldValue(allCatEntries[listInd],
+                                                        categoryDictionary)
+        allCategoryNums.append(catNum)
+    return np.array(allCategoryNums)
+
+
 
 """
 This will give us Age at Time of MRI
@@ -109,14 +145,9 @@ Entries will be the following:
     4: Asian/Pacific
     5: Amer Indian/Eskio
 """
-raceOfPtsCatNums = []
 raceCategories = {"white":1,"black":2,"asian":3,"asian/pacific":4,"amer indian/eskimo":5}
-raceOfPtsAllEntries = getAllStringsForCol('I')
-for listInd in range(len(raceOfPtsAllEntries)):
-    raceNum = DataSetLogic.obtainCategoryFieldValue(raceOfPtsAllEntries[listInd], raceCategories)
-    raceOfPtsCatNums.append(raceNum)
-raceFeature = np.array(raceOfPtsCatNums)
-print(raceFeature.shape)
+raceFeature = getCategoryFeature('I',raceCategories)
+
 
 
 """
@@ -207,6 +238,54 @@ print(colADfeature.shape)
 
 """
 Column AI
+Most recent PSA. 
+Will store time in days since most recent one
 """
-colAIvalues = getAllStringsForCol('AI')
-TESTFUNC_printUniqueEntries(colAIvalues)
+timeSincePSA=getTimeSinceFeature('AI','C')
+
+
+"""
+Column AJ, AK are both numeric values
+"""
+colAJfeature = getNumericValueFeature('AJ')
+colAKfeature = getNumericValueFeature('AK')
+
+
+"""
+Column AL
+If missing then do AK/AJ
+"""
+colALfeature = getPercentageValueFeature('AL')
+freePSApercentFeature = getBackfillPercentageFeature(colALfeature,colAKfeature,colAJfeature)
+
+
+"""
+Column BI, BJ are numeric values
+"""
+colBIfeature = getNumericValueFeature('BI')
+colBJfeature = getNumericValueFeature('BJ')
+
+"""
+column BL,BM is a percentage
+"""
+colBLfeature = getPercentageValueFeature('BL')
+colBMfeature = getPercentageValueFeature('BM')
+
+"""
+column BP is category
+-1: unknown, other
+1: Siemens 3T
+2: Phillips
+"""
+deviceCategories = {"siemens 3t":1,"phillips":2}
+deviceFeature = getCategoryFeature('BP',deviceCategories)
+
+"""
+column BR is positive or negative
+"""
+colBRfeature = get0_to_N_or_missingFeature('BR',1)
+colBSfeature = get0_to_N_or_missingFeature('BS',1)
+
+TESTFUNC_printUniqueEntries(colBRfeature)
+TESTFUNC_printUniqueEntries(colBSfeature)
+
