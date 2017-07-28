@@ -61,16 +61,21 @@ def obtainPercentageFieldValue(percentageString):
     else:
         return numericValue
 
-
-def obtainResult_0_N_or_missing(cellStringOrig,Nvalue):
+def obtainResult_0_N_or_missing_withMissingCat(cellStringOrig,Nvalue,missingDataInteger):
     try:
         cellValue = int(cellStringOrig)
         if(cellValue>=0 and cellValue <= Nvalue):
-            return cellValue
+            if(cellValue==missingDataInteger):
+                return -1
+            else:
+                return cellValue
         else:
             return -1
     except:
         return -1
+
+def obtainResult_0_N_or_missing(cellStringOrig,Nvalue):
+    return obtainResult_0_N_or_missing_withMissingCat(cellStringOrig,Nvalue,Nvalue+3)
 
 def obtainGleasonScoreFeatures(originalString):
     scoreStrings = set()

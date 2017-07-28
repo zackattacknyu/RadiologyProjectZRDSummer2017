@@ -11,6 +11,14 @@ FC, FD, FE, FF, FG, FH, FI, FK, FL, FM, FN, FO, FP, FQ, FR, FS, FT, FU, FV
 NOTE:
     MISSING DATA WILL BE GIVEN VALUE -1 IN THE DATA SET
 
+This site has documentation on using XGBoost
+http://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.core
+
+Under "XGBRegressor" and "XGBClassifier" there is a parameter
+    entitled "missing" where you denote the float value that represents
+    missing data.
+IMPORTANT: Set that paramater to -1 before doing any training with this data
+
 IMPORTANT CODING NOTE:
     THIS CODE USING FUNCTIONAL PROGRAMMING FEATURES
     MEANING THAT FUNCTIONS ARE PASSED AS ARGUMENTS
@@ -25,6 +33,7 @@ from datetime import datetime
 from datetime import date
 from matplotlib import pyplot as plt
 import DataSetLogic
+import CategoryFeatureLogic
 
 INITIAL_ROW_NUMBER=5
 DATA_WORKSHEET_NAME='Sheet1'
@@ -62,6 +71,11 @@ def OBTAIN_FEATURE_COLUMN(columnCodeStr,functionForFeatureLogic,*functionArgs):
 def get0_to_N_or_missingFeature(columnCodeStr, Nval):
     return OBTAIN_FEATURE_COLUMN(columnCodeStr,DataSetLogic.obtainResult_0_N_or_missing,Nval)
 
+def get0_to_N_or_missingFeature_withMissingCat(columnCodeStr, Nval,missingDataInt):
+    return OBTAIN_FEATURE_COLUMN(
+        columnCodeStr,
+        DataSetLogic.obtainResult_0_N_or_missing_withMissingCat,
+        Nval,missingDataInt)
 
 def getNumericValueFeature(columnCodeStr):
     return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainNumericFieldValue)
@@ -87,7 +101,7 @@ def getBackfillPercentageFeature(percentageFeature,numeratorFeature,denominatorF
         percentage = percentageFeature[index1]
         if(percentage<0):
             numer = float(numeratorFeature[index1])
-            denom = float(numeratorFeature[index1])
+            denom = float(denominatorFeature[index1])
             if(numer>0 and denom>0):
                 outputFeature.append(numer/denom)
             else:
@@ -124,14 +138,12 @@ for listInd in range(len(ageCellContentsList)):
         dateOfMRIcellStrList[listInd])
     ageOfPatients.append(currentAge)
 ageAtMriFeature = np.array(ageOfPatients)
-print(ageAtMriFeature.shape)
 
 
 """
 This will give us the BMI of patients
 """
 bmiFeature = getNumericValueFeature('J')
-print(bmiFeature.shape)
 
 
 """
@@ -147,7 +159,8 @@ Entries will be the following:
 """
 raceCategories = {"white":1,"black":2,"asian":3,"asian/pacific":4,"amer indian/eskimo":5}
 raceFeature = getCategoryFeature('I',raceCategories)
-
+raceFeatureMatrix=CategoryFeatureLogic.categoryToOneHotNoBothNeither(raceFeature,5)
+print(raceFeatureMatrix.shape)
 
 
 """
@@ -163,8 +176,6 @@ for listInd in range(len(allPriorOutside)):
     priorOutsideValues.append(DataSetLogic.obtainResultYesNoValue(
         allPriorOutside[listInd],['no notes','unknown','n/a']))
 priorOutsideFeature = np.array(priorOutsideValues)
-print(priorOutsideFeature.shape)
-
 
 """
 Column M: Prior Result
@@ -177,7 +188,6 @@ for listInd in range(len(allPriorOutside)):
     priorResult.append(DataSetLogic.obtainResultYesNoValue(
         allPriorOutside[listInd],['no notes','unknown','n/a']))
 priorResultFeature = np.array(priorResult)
-print(priorResultFeature.shape)
 
 
 """
@@ -203,7 +213,8 @@ gleasonScoreLessDomFeature = np.array(gleasonScoreLessDom)
 """
 Column Q: Digital Rectal Exam score
 Column S: Pre-biopsy clinical information assay
-Column U: TODO: FILL THIS IN
+Column U: Pre-biopsy clinical information assay qualitative, positive or negative
+***GO BACK TO COLUMN V***
 Column W: Assay
 Column Y: Assay Result
 Column Z: Risk of High Grade Caner
@@ -221,7 +232,8 @@ riskOfHighGradeCancerFeature = get0_to_N_or_missingFeature('Z',1)
 Column AA
 """
 colAAfeature = get0_to_N_or_missingFeature('AA',3)
-
+colAAfeatureMatrix = CategoryFeatureLogic.categoryToOneHotFeatureZeroStart(colAAfeature,4,-1,-1)
+print(colAAfeatureMatrix.shape)
 
 """
 Column AB
@@ -233,7 +245,6 @@ colABfeature = get0_to_N_or_missingFeature('AB',1)
 Column AD, percentage risk of high grade tumors
 """
 colADfeature = getPercentageValueFeature('AD')
-print(colADfeature.shape)
 
 
 """
@@ -279,6 +290,8 @@ column BP is category
 """
 deviceCategories = {"siemens 3t":1,"phillips":2}
 deviceFeature = getCategoryFeature('BP',deviceCategories)
+deviceFeatureMatrix=CategoryFeatureLogic.categoryToOneHotNoBothNeither(deviceFeature,2)
+print(deviceFeatureMatrix.shape)
 
 """
 column BR is positive or negative
@@ -286,6 +299,43 @@ column BR is positive or negative
 colBRfeature = get0_to_N_or_missingFeature('BR',1)
 colBSfeature = get0_to_N_or_missingFeature('BS',1)
 
-TESTFUNC_printUniqueEntries(colBRfeature)
-TESTFUNC_printUniqueEntries(colBSfeature)
+"""
+lesion Info: BT, BU, BW, BX, BY, BZ
+"""
+
+"""
+For column BT, "3" indicates missing data
+"""
+colBTfeature = get0_to_N_or_missingFeature_withMissingCat('BT',4,3)
+colBTfeatureMatrix = CategoryFeatureLogic.categoryToOneHotNoBothNeither(colBTfeature,4)
+
+"""
+Column BU, where lesion is located
+L: left
+R: right
+B: both
+N: no laterality
+"""
+colBUcategories = {"l":1,"r":2,"b":3,"n":4}
+colBUfeaturePre = getCategoryFeature('BU',colBUcategories)
+colBUfeatureMatrix = CategoryFeatureLogic.categoryToOneHotFeature(colBUfeaturePre,2,3,4)
+print(colBUfeatureMatrix.shape)
+
+"""
+Column BW, BX, BY: Lesion Location Information
+All Zero, One, Missing type fields
+"""
+columnBWfeature = get0_to_N_or_missingFeature('BW',1)
+columnBXfeature = get0_to_N_or_missingFeature('BX',1)
+columnBYfeature = get0_to_N_or_missingFeature('BY',1)
+
+
+"""
+Column BZ: Lesion Size, numeric value
+"""
+colBZfeature = getNumericValueFeature('BZ')
+
+
+#colCN = getAllStringsForCol('CN')
+#TESTFUNC_printUniqueEntries(colCN)
 
