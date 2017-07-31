@@ -77,6 +77,10 @@ def get0_to_N_or_missingFeature_withMissingCat(columnCodeStr, Nval,missingDataIn
         DataSetLogic.obtainResult_0_N_or_missing_withMissingCat,
         Nval,missingDataInt)
 
+def get0_to_N_or_missingFeature_withMissingCat_Matrix(columnCodeStr,Nval,missingDataInt):
+    colFeature = get0_to_N_or_missingFeature_withMissingCat(columnCodeStr,Nval,missingDataInt)
+    return CategoryFeatureLogic.categoryToOneHotFeatureZeroStart(colFeature,Nval+1,-1,-1)
+
 def getNumericValueFeature(columnCodeStr):
     return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainNumericFieldValue)
 
@@ -119,7 +123,20 @@ def getCategoryFeature(columnCodeStr,categoryDictionary):
         allCategoryNums.append(catNum)
     return np.array(allCategoryNums)
 
-
+def getGleasonScoreMatrix(columnCodeStr):
+    gleasonScores = getAllStringsForCol(columnCodeStr)
+    gleasonScoreMoreDom = []
+    gleasonScoreLessDom = []
+    for listInd in range(len(gleasonScores)):
+        moredom, lessdom = DataSetLogic.obtainGleasonScoreFeatures(gleasonScores[listInd])
+        gleasonScoreMoreDom.append(moredom)
+        gleasonScoreLessDom.append(lessdom)
+    gleasonScoreMoreDomFeature = np.array(gleasonScoreMoreDom)
+    gleasonScoreLessDomFeature = np.array(gleasonScoreLessDom)
+    gleasonScoreMatrix = np.zeros((len(gleasonScoreLessDom),2))
+    gleasonScoreMatrix[:,0]=gleasonScoreMoreDomFeature
+    gleasonScoreMatrix[:,1]=gleasonScoreLessDomFeature
+    return gleasonScoreMatrix
 
 """
 This will give us Age at Time of MRI
@@ -199,15 +216,7 @@ Logic will be as follows:
         - If there is a tie, use one with higher A
 If either feature is -1, then there is missing data
 """
-gleasonScores = getAllStringsForCol('N')
-gleasonScoreMoreDom=[]
-gleasonScoreLessDom=[]
-for listInd in range(len(gleasonScores)):
-    moredom,lessdom=DataSetLogic.obtainGleasonScoreFeatures(gleasonScores[listInd])
-    gleasonScoreMoreDom.append(moredom)
-    gleasonScoreLessDom.append(lessdom)
-gleasonScoreMoreDomFeature = np.array(gleasonScoreMoreDom)
-gleasonScoreLessDomFeature = np.array(gleasonScoreLessDom)
+colNmatrix=getGleasonScoreMatrix('N')
 
 
 """
@@ -336,6 +345,133 @@ Column BZ: Lesion Size, numeric value
 colBZfeature = getNumericValueFeature('BZ')
 
 
-#colCN = getAllStringsForCol('CN')
-#TESTFUNC_printUniqueEntries(colCN)
+"""
+Column CC
+Numeric value 0-5 with 0 meaning missing
+"""
+colCCfeature = get0_to_N_or_missingFeature_withMissingCat('CC',5,0)
+
+"""
+Column CI
+same logic as CC
+"""
+colCIfeature = get0_to_N_or_missingFeature_withMissingCat('CI',5,0)
+
+"""
+Column CN
+3 values: 0,1,2
+0 negative, 1 positive, 2 no score given, so missing
+"""
+colCNfeature = get0_to_N_or_missingFeature_withMissingCat('CN',2,2)
+
+"""
+Column CO
+Numeric value 0-5 with 0 being missing data
+"""
+colCOfeature = get0_to_N_or_missingFeature_withMissingCat('CO',5,0)
+
+"""
+Column CU
+**COLUMN TO PREDICT**
+0,1,2
+0 negative, 1 positive, 2 missing
+"""
+colCUfeature = get0_to_N_or_missingFeature_withMissingCat('CU',2,2)
+
+"""
+Column CV
+**COLUMN TO PREDICT**
+same logic as CU
+"""
+colCVfeature = get0_to_N_or_missingFeature_withMissingCat('CV',2,2)
+
+"""
+Column CW
+Summary of Gleason score
+numeric value 0-10
+"""
+colCWfeature = get0_to_N_or_missingFeature('CW',10)
+
+"""
+Column CX
+same logic as CU
+"""
+colCXfeature = get0_to_N_or_missingFeature_withMissingCat('CX',2,2)
+
+
+"""
+Column CY
+other 12core biospy
+"""
+colCYfeatureMatrix=get0_to_N_or_missingFeature_withMissingCat_Matrix('CY',3,2)
+print(colCYfeatureMatrix.shape)
+
+"""
+Column CZ
+gleason score for 12core. same logic as N
+"""
+colCZfeatureMatrix = getGleasonScoreMatrix('CZ')
+
+"""
+Column DA
+summary of gleason score. same logic as CW
+"""
+colDAfeature = get0_to_N_or_missingFeature('CW',10)
+
+"""
+Column DC
+"""
+colDCfeature = getPercentageValueFeature('DC')
+
+"""
+Column DD
+same logic as CY
+"""
+colDDfeatureMatrix = get0_to_N_or_missingFeature_withMissingCat_Matrix('DD',3,2)
+print(colDDfeatureMatrix.shape)
+
+"""
+column DE
+**IMPORTANT COLUMN**
+0 - negative
+1 - positive
+2 - missing data
+"""
+colDEfeature = get0_to_N_or_missingFeature_withMissingCat('DE',2,2)
+
+""""
+column DF
+"""
+colDFfeature = get0_to_N_or_missingFeature_withMissingCat('DF',2,2)
+
+"""
+column DG
+same logic as CY
+"""
+colDGfeatureMatrix = get0_to_N_or_missingFeature_withMissingCat_Matrix('DG',3,2)
+
+"""
+column DH
+gleason score column. same as N
+"""
+columnDHfeature = getGleasonScoreMatrix('DH')
+print(columnDHfeature.shape)
+
+"""
+Column DI
+sum of gleason score. 0-10
+"""
+columnDIfeature = get0_to_N_or_missingFeature('DI',10)
+
+"""
+Column DK
+percentage value
+"""
+columnDKfeature = getPercentageValueFeature('DK')
+
+"""
+Column DL. same logic as DD
+"""
+colDLfeatureMatrix = get0_to_N_or_missingFeature_withMissingCat_Matrix('DL',3,2)
+
 
