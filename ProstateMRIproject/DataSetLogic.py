@@ -2,6 +2,9 @@ import datetime
 from datetime import date
 import numpy as np
 
+MISSING_DATA_FLOAT_VALUE = -3000
+EPOCH = datetime.datetime.utcfromtimestamp(0).date()
+
 def obtainAgeFromDOBFields(ageCellContents,dobCellValue,dateOfMRIcellString):
     currentAge = 0
     try:
@@ -20,21 +23,21 @@ def obtainAgeFromDOBFields(ageCellContents,dobCellValue,dateOfMRIcellString):
             currentAge = diffBetweenBirthAndMRI.days / 365  # gets the floor, what we want
     return currentAge
 
+def obtainUniqueEntries(stringArray):
+    returnSet = set()
+    for str1 in stringArray:
+        returnSet.add(str1)
+    return returnSet
+
 def obtainNumericFieldValue(cellString):
     try:
         bmiValue=float(cellString)
     except:
-        bmiValue = -1
+        bmiValue = MISSING_DATA_FLOAT_VALUE
     return bmiValue
 
 def obtainCategoryFieldValue(cellString2,categoryDictionary):
-    if(not cellString2):
-        return -1
-    cellString = cellString2.lower()
-    if (cellString in categoryDictionary):
-        return categoryDictionary[cellString]
-    else:
-        return -1
+    return obtainCategoryFieldValueWithMissingDataIndicators(cellString2,categoryDictionary,[])
 
 def obtainResultYesNoValue(cellStringOrig,missingDataStrs):
     if(not cellStringOrig):
@@ -42,11 +45,23 @@ def obtainResultYesNoValue(cellStringOrig,missingDataStrs):
     cellString = str(cellStringOrig).lower()
     for missingIndicator in missingDataStrs:
         if missingIndicator in cellString:
-            return -1
+            return MISSING_DATA_FLOAT_VALUE
     if "1" in cellString:
         return 1
     else:
         return 0
+
+def obtainCategoryFieldValueWithMissingDataIndicators(cellString2,categoryDictionary,missingDataInds):
+    if (not cellString2):
+        return MISSING_DATA_FLOAT_VALUE
+    cellString = cellString2.lower()
+    for missingIndicator in missingDataInds:
+        if missingIndicator in cellString:
+            return MISSING_DATA_FLOAT_VALUE
+    if (cellString in categoryDictionary):
+        return categoryDictionary[cellString]
+    else:
+        return MISSING_DATA_FLOAT_VALUE
 
 """
 The logic for these columns is as follows:
@@ -66,13 +81,23 @@ def obtainResult_0_N_or_missing_withMissingCat(cellStringOrig,Nvalue,missingData
         cellValue = int(cellStringOrig)
         if(cellValue>=0 and cellValue <= Nvalue):
             if(cellValue==missingDataInteger):
-                return -1
+                return MISSING_DATA_FLOAT_VALUE
             else:
                 return cellValue
         else:
-            return -1
+            return MISSING_DATA_FLOAT_VALUE
     except:
-        return -1
+        return MISSING_DATA_FLOAT_VALUE
+
+def obtainResult_0_N_or_missing_whereMissingIsZero(cellStringOrig,Nvalue):
+    try:
+        cellValue = int(cellStringOrig)
+        if(cellValue>=0 and cellValue <= Nvalue):
+            return cellValue
+        else:
+            return 0
+    except:
+        return 0
 
 def obtainResult_0_N_or_missing(cellStringOrig,Nvalue):
     return obtainResult_0_N_or_missing_withMissingCat(cellStringOrig,Nvalue,Nvalue+3)
@@ -80,11 +105,12 @@ def obtainResult_0_N_or_missing(cellStringOrig,Nvalue):
 def obtainGleasonScoreFeatures(originalString):
     scoreStrings = set()
     for token1 in str(originalString).split(';'):
-        for token2 in token1.split():
-            if "+" in token2:
-                scoreStrings.add(token2)
-    currentMoreDomOutput=-1
-    currentLessDomOutput=-1
+        for token3 in token1.split('='):
+            for token2 in token3.split():
+                if "+" in token2:
+                    scoreStrings.add(token2)
+    currentMoreDomOutput=MISSING_DATA_FLOAT_VALUE
+    currentLessDomOutput=MISSING_DATA_FLOAT_VALUE
     maxTotalScore=0
     for scoreStr in scoreStrings:
         scoreDigits = scoreStr.split("+")
@@ -115,17 +141,25 @@ def obtainDateFromString(originalString):
             return datetime.datetime.strptime(monthPart + " 15 " + yearPart,"%b %d %Y")
 
         except:
-            return -1
+            return MISSING_DATA_FLOAT_VALUE
+
+def obtainDateOrMissingFromValueFeature(cellValue):
+    try:
+        #return cellValue.time()
+        timeSinceEpoch = cellValue.date()-EPOCH
+        return timeSinceEpoch.days
+    except:
+        return MISSING_DATA_FLOAT_VALUE
 
 def obtainTimeSinceLastProcedure(lastProcedureDateString,currentDateString):
     try:
         currentDate = obtainDateFromString(currentDateString)
         lastProcDate = obtainDateFromString(lastProcedureDateString)
-        if(currentDate==-1 or lastProcDate==-1):
-            return -1
+        if(currentDate==MISSING_DATA_FLOAT_VALUE or lastProcDate==MISSING_DATA_FLOAT_VALUE):
+            return MISSING_DATA_FLOAT_VALUE
         timeSinceLast = currentDate-lastProcDate
         return np.abs(timeSinceLast.days)
     except:
-        return -1
+        return MISSING_DATA_FLOAT_VALUE
 
 
