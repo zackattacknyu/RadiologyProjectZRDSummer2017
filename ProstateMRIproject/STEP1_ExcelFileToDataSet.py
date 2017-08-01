@@ -474,4 +474,97 @@ Column DL. same logic as DD
 """
 colDLfeatureMatrix = get0_to_N_or_missingFeature_withMissingCat_Matrix('DL',3,2)
 
+"""
+column DN
+**BACK TO**
+"""
+colDNstrings = getAllStringsForCol('DN')
+#TESTFUNC_printUniqueEntries(colDNstrings)
 
+"""
+Column DT
+"""
+colDTfeature = get0_to_N_or_missingFeature('DT',1)
+
+"""
+Column DU
+"""
+colDUfeature = get0_to_N_or_missingFeature('DU',1)
+
+"""
+Column DV
+"""
+colDVfeature = get0_to_N_or_missingFeature('DV',1)
+
+"""
+Column DW: **BACK TO**
+"""
+
+"""
+Column DX: **BACK TO**
+"""
+
+"""
+Column DY: **BACK TO**
+"""
+colDYstrings = getAllStringsForCol('DY')
+#TESTFUNC_printUniqueEntries(colDYstrings)
+
+"""
+Column DZ: 
+Distribution percentile
+"""
+colDZfeature = getPercentageValueFeature('DZ')
+
+"""
+Column EA: **BACK TO**
+"""
+
+"""
+Column EB: **BACK TO**
+"""
+
+"""
+Column EC: **BACK TO**
+"""
+
+"""
+Column ED: **BACK TO**, same as DW
+"""
+
+"""
+Column EE: Date of Assay, same as EA: **BACK TO**
+"""
+
+"""
+Column EF
+"""
+colEFfeature = getNumericValueFeature('EF')
+
+"""
+Column EG: percentage
+"""
+colEGfeature = getPercentageValueFeature('EG')
+
+"""
+Column EH: category
+"""
+colEHstrings = getAllStringsForCol('EH')
+TESTFUNC_printUniqueEntries(colEHstrings)
+
+colEWfeature = getNumericValueFeature('EW')
+
+colEYfeature = getGleasonScoreMatrix('EY')
+
+colFCfeature = get0_to_N_or_missingFeature('FC',1)
+colFDfeature = get0_to_N_or_missingFeature('FD',1)
+colFEfeature = get0_to_N_or_missingFeature('FE',1)
+
+colFKfeature = get0_to_N_or_missingFeature('FK',1)
+colFLfeature = get0_to_N_or_missingFeature('FL',1)
+colFMfeature = get0_to_N_or_missingFeature('FM',1)
+colFNfeature = get0_to_N_or_missingFeature('FN',1)
+
+"""
+ASK ROU ABOUT FO-FV
+"""
