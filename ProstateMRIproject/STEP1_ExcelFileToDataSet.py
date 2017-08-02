@@ -34,10 +34,18 @@ from datetime import date
 from matplotlib import pyplot as plt
 import DataSetLogic
 import CategoryFeatureLogic
+import os
 
 INITIAL_ROW_NUMBER=5
 DATA_WORKSHEET_NAME='Sheet1'
 PROSTATE_FILE_PATH= 'D:/DATA/rouProstateFiles/ROU_LESION_DATA_modified.xlsx'
+outputPath='D:\DATA\GENERATED_FILES_FOR_ROU'
+
+csvInfoFileName='DATA_SET_COLUMN_INFORMATION.csv'
+dataSetFileName="FINAL_DATA_SET.npy"
+
+outputCSVfullPath = os.path.join(outputPath,csvInfoFileName)
+outputDataSetFullPath=os.path.join(outputPath,dataSetFileName)
 
 excelData = openpyxl.load_workbook(PROSTATE_FILE_PATH)
 dataOnSheet = excelData[DATA_WORKSHEET_NAME]
@@ -696,7 +704,9 @@ _________________________________
 
 DATA_SET_ARRAY_PRE=np.zeros((len(ageAtMriFeature),2000))
 currentColumnStartIndex=0
-infoFile = open('DATA_SET_COLUMN_INFORMATION.csv','w')
+
+
+infoFile = open(outputCSVfullPath,'w')
 infoFile.write('StartColumnIndex,NumCol,Information,ColumnsInExcelSpreadsheet\n')
 
 def addToDataSet(currentFeature, currentColStartInd, infoStr, colInfoStr):
@@ -764,16 +774,6 @@ currentColumnStartIndex=addToDataSet(
     colNmatrix,currentColumnStartIndex,
     "Column N Matrix","N")
 
-"""
-Column Q: Digital Rectal Exam score
-Column S: Pre-biopsy clinical information assay
-Column U: Pre-biopsy clinical information assay qualitative, positive or negative
-Column V
-Column W: Assay
-Column Y: Assay Result
-Column Z: Risk of High Grade Caner
-    - 0,1,or missing
-"""
 currentColumnStartIndex=addToDataSet(
     dreResultFeature,currentColumnStartIndex,
     "Digitial Rectal Exam result","Q")
@@ -837,74 +837,227 @@ currentColumnStartIndex=addToDataSet(
     deviceFeatureMatrix,currentColumnStartIndex,
     "DEVICE FEATURE","BP")
 
+currentColumnStartIndex=addToDataSet(
+    colBMfeature,currentColumnStartIndex,
+    "COLUMN BM","BM")
+currentColumnStartIndex=addToDataSet(
+    colBRfeature,currentColumnStartIndex,
+    "COLUMN BR","BR")
+currentColumnStartIndex=addToDataSet(
+    colBSfeature,currentColumnStartIndex,
+    "COLUMN BS","BS")
 
-colBRfeature
-colBSfeature
-colBTfeatureMatrix
-colBUfeatureMatrix
-columnBWfeature
-columnBXfeature
-columnBYfeature
-colBZfeature
-colCCfeature
-colCIfeature
-colCNfeature
-colCOfeature
-colCUfeature
-colCVfeature
-colCWfeature
-colCXfeature
-colCYfeatureMatrix
-colCZfeatureMatrix
-colDAfeature
-colDCfeature
-colDDfeatureMatrix
-colDEfeature
-colDFfeature
-colDGfeatureMatrix
-columnDHfeature #THIS IS A MATRIX
-columnDIfeature
-columnDKfeature
-colDLfeatureMatrix
-colDNfeature
-colDTfeature
-colDUfeature
-colDVfeature
-colDWfeature
-colDXfeature
-colDYfeature
-colDZfeature
-colEAfeature
-colEBfeature
-colECfeature
-colEDfeature
-colEEfeature
-colEFfeature
-colEGfeature
-colEHfeatureMatrix
-colERfeatureMatrix
-colESfeature
-colETfeature
-colEVfeatureMatrix
-colEWfeature
-colEYfeatureMatrix
-colFCfeature
-colFDfeature
-colFEfeature
-colFFfeature
-colFGfeature
-colFHfeature
-colFIfeatureMatrix
-colFKfeature
-colFLfeature
-colFMfeatureMatrix
-colFNfeature
-colFOfeature
-colFPfeature
-colFQfeature
-colFRfeature
-colFTfeature
+currentColumnStartIndex=addToDataSet(
+    colBTfeatureMatrix,currentColumnStartIndex,
+    "COLUMN BT","BT")
+currentColumnStartIndex=addToDataSet(
+    colBUfeatureMatrix,currentColumnStartIndex,
+    "COLUMN BU","BU")
 
-FINAL_DATA_SET=DATA_SET_ARRAY_PRE[:,currentColumnStartIndex]
-np.save("FINAL_DATA_SET.npy",FINAL_DATA_SET)
+currentColumnStartIndex=addToDataSet(
+    columnBWfeature,currentColumnStartIndex,
+    "COLUMN BW","BW")
+currentColumnStartIndex=addToDataSet(
+    columnBXfeature,currentColumnStartIndex,
+    "COLUMN BX","BX")
+currentColumnStartIndex=addToDataSet(
+    columnBYfeature,currentColumnStartIndex,
+    "COLUMN BY","BY")
+
+currentColumnStartIndex=addToDataSet(
+    colBZfeature,currentColumnStartIndex,
+    "COLUMN BZ","BZ")
+currentColumnStartIndex=addToDataSet(
+    colCCfeature,currentColumnStartIndex,
+    "COLUMN CC","CC")
+currentColumnStartIndex=addToDataSet(
+    colCIfeature,currentColumnStartIndex,
+    "COLUMN CI","CI")
+currentColumnStartIndex=addToDataSet(
+    colCNfeature,currentColumnStartIndex,
+    "COLUMN CN","CN")
+currentColumnStartIndex=addToDataSet(
+    colCOfeature,currentColumnStartIndex,
+    "COLUMN CO","CO")
+currentColumnStartIndex=addToDataSet(
+    colCUfeature,currentColumnStartIndex,
+    "COLUMN CU","CU")
+currentColumnStartIndex=addToDataSet(
+    colCVfeature,currentColumnStartIndex,
+    "COLUMN CV","CV")
+currentColumnStartIndex=addToDataSet(
+    colCWfeature,currentColumnStartIndex,
+    "COLUMN CW","CW")
+currentColumnStartIndex=addToDataSet(
+    colCXfeature,currentColumnStartIndex,
+    "COLUMN CX","CX")
+
+currentColumnStartIndex=addToDataSet(
+    colCYfeatureMatrix,currentColumnStartIndex,
+    "COLUMN CY","CY")
+currentColumnStartIndex=addToDataSet(
+    colCZfeatureMatrix,currentColumnStartIndex,
+    "COLUMN CZ","CZ")
+
+currentColumnStartIndex=addToDataSet(
+    colDAfeature,currentColumnStartIndex,
+    "COLUMN DA","DA")
+currentColumnStartIndex=addToDataSet(
+    colDCfeature,currentColumnStartIndex,
+    "COLUMN DC","DC")
+
+currentColumnStartIndex=addToDataSet(
+    colDDfeatureMatrix,currentColumnStartIndex,
+    "COLUMN DD","DD")
+currentColumnStartIndex=addToDataSet(
+    colDEfeature,currentColumnStartIndex,
+    "COLUMN DE","DE")
+currentColumnStartIndex=addToDataSet(
+    colDFfeature,currentColumnStartIndex,
+    "COLUMN DF","DF")
+
+currentColumnStartIndex=addToDataSet(
+    colDGfeatureMatrix,currentColumnStartIndex,
+    "COLUMN DG","DG")
+
+currentColumnStartIndex=addToDataSet(
+    columnDHfeature,currentColumnStartIndex,
+    "COLUMN DH MATRIX","DH")
+
+currentColumnStartIndex=addToDataSet(
+    columnDIfeature,currentColumnStartIndex,
+    "COLUMN DI","DI")
+currentColumnStartIndex=addToDataSet(
+    columnDKfeature,currentColumnStartIndex,
+    "COLUMN DK","DK")
+
+currentColumnStartIndex=addToDataSet(
+    colDLfeatureMatrix,currentColumnStartIndex,
+    "COLUMN DL","DL")
+
+currentColumnStartIndex=addToDataSet(
+    colDNfeature,currentColumnStartIndex,
+    "COLUMN DN","DN")
+currentColumnStartIndex=addToDataSet(
+    colDTfeature,currentColumnStartIndex,
+    "COLUMN DT","DT")
+currentColumnStartIndex=addToDataSet(
+    colDUfeature,currentColumnStartIndex,
+    "COLUMN DU","DU")
+currentColumnStartIndex=addToDataSet(
+    colDVfeature,currentColumnStartIndex,
+    "COLUMN DV","DV")
+currentColumnStartIndex=addToDataSet(
+    colDWfeature,currentColumnStartIndex,
+    "COLUMN DW","DW")
+currentColumnStartIndex=addToDataSet(
+    colDXfeature,currentColumnStartIndex,
+    "COLUMN DX","DX")
+currentColumnStartIndex=addToDataSet(
+    colDYfeature,currentColumnStartIndex,
+    "COLUMN DY","DY")
+currentColumnStartIndex=addToDataSet(
+    colDZfeature,currentColumnStartIndex,
+    "COLUMN DZ","DZ")
+
+currentColumnStartIndex=addToDataSet(
+    colEAfeature,currentColumnStartIndex,
+    "COLUMN EA","EA")
+currentColumnStartIndex=addToDataSet(
+    colEBfeature,currentColumnStartIndex,
+    "COLUMN EB","EB")
+currentColumnStartIndex=addToDataSet(
+    colECfeature,currentColumnStartIndex,
+    "COLUMN EC","EC")
+currentColumnStartIndex=addToDataSet(
+    colEDfeature,currentColumnStartIndex,
+    "COLUMN ED","ED")
+currentColumnStartIndex=addToDataSet(
+    colEEfeature,currentColumnStartIndex,
+    "COLUMN EE","EE")
+currentColumnStartIndex=addToDataSet(
+    colEFfeature,currentColumnStartIndex,
+    "COLUMN EF","EF")
+currentColumnStartIndex=addToDataSet(
+    colEGfeature,currentColumnStartIndex,
+    "COLUMN EG","EG")
+
+currentColumnStartIndex=addToDataSet(
+    colEHfeatureMatrix,currentColumnStartIndex,
+    "COLUMN EH MATRIX","EH")
+currentColumnStartIndex=addToDataSet(
+    colERfeatureMatrix,currentColumnStartIndex,
+    "COLUMN ER MATRIX","ER")
+
+currentColumnStartIndex=addToDataSet(
+    colESfeature,currentColumnStartIndex,
+    "COLUMN ES","ES")
+currentColumnStartIndex=addToDataSet(
+    colETfeature,currentColumnStartIndex,
+    "COLUMN ET","ET")
+
+currentColumnStartIndex=addToDataSet(
+    colEVfeatureMatrix,currentColumnStartIndex,
+    "COLUMN EV MATRIX","EV")
+
+currentColumnStartIndex=addToDataSet(
+    colEWfeature,currentColumnStartIndex,
+    "COLUMN EW","EW")
+currentColumnStartIndex=addToDataSet(
+    colEYfeatureMatrix,currentColumnStartIndex,
+    "COLUMN EY","EY")
+
+currentColumnStartIndex=addToDataSet(
+    colFCfeature,currentColumnStartIndex,
+    "COLUMN FC","FC")
+currentColumnStartIndex=addToDataSet(
+    colFDfeature,currentColumnStartIndex,
+    "COLUMN FD","FD")
+currentColumnStartIndex=addToDataSet(
+    colFEfeature,currentColumnStartIndex,
+    "COLUMN FE","FE")
+currentColumnStartIndex=addToDataSet(
+    colFFfeature,currentColumnStartIndex,
+    "COLUMN FF","FF")
+currentColumnStartIndex=addToDataSet(
+    colFGfeature,currentColumnStartIndex,
+    "COLUMN FG","FG")
+currentColumnStartIndex=addToDataSet(
+    colFHfeature,currentColumnStartIndex,
+    "COLUMN FH","FH")
+currentColumnStartIndex=addToDataSet(
+    colFIfeatureMatrix,currentColumnStartIndex,
+    "COLUMN FI MATRIX","FI")
+currentColumnStartIndex=addToDataSet(
+    colFKfeature,currentColumnStartIndex,
+    "COLUMN FK","FK")
+currentColumnStartIndex=addToDataSet(
+    colFLfeature,currentColumnStartIndex,
+    "COLUMN FL","FL")
+
+currentColumnStartIndex=addToDataSet(
+    colFMfeatureMatrix,currentColumnStartIndex,
+    "COLUMN FM MATRIX","FM")
+
+currentColumnStartIndex=addToDataSet(
+    colFNfeature,currentColumnStartIndex,
+    "COLUMN FN","FN")
+currentColumnStartIndex=addToDataSet(
+    colFOfeature,currentColumnStartIndex,
+    "COLUMN FO","FO")
+currentColumnStartIndex=addToDataSet(
+    colFPfeature,currentColumnStartIndex,
+    "COLUMN FP","FP")
+currentColumnStartIndex=addToDataSet(
+    colFQfeature,currentColumnStartIndex,
+    "COLUMN FQ","FQ")
+currentColumnStartIndex=addToDataSet(
+    colFRfeature,currentColumnStartIndex,
+    "COLUMN FR","FR")
+currentColumnStartIndex=addToDataSet(
+    colFTfeature,currentColumnStartIndex,
+    "COLUMN FT","FT")
+
+FINAL_DATA_SET=DATA_SET_ARRAY_PRE[:,0:currentColumnStartIndex]
+np.save(outputDataSetFullPath,FINAL_DATA_SET)
 infoFile.close()
