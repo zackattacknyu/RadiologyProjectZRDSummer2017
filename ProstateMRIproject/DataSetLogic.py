@@ -36,6 +36,19 @@ def obtainNumericFieldValue(cellString):
         bmiValue = MISSING_DATA_FLOAT_VALUE
     return bmiValue
 
+def obtainNumericFieldValueWithPosNeg(cellString):
+    try:
+        bmiValue=float(cellString)
+    except:
+        cellStringStr = str(cellString)
+        if('positive' in cellStringStr.lower()):
+            bmiValue=0.51
+        elif('negative' in cellStringStr.lower()):
+            bmiValue=-0.51
+        else:
+            bmiValue = MISSING_DATA_FLOAT_VALUE
+    return bmiValue
+
 def obtainCategoryFieldValue(cellString2,categoryDictionary):
     return obtainCategoryFieldValueWithMissingDataIndicators(cellString2,categoryDictionary,[])
 
@@ -72,6 +85,14 @@ The logic for these columns is as follows:
 def obtainPercentageFieldValue(percentageString):
     numericValue = obtainNumericFieldValue(percentageString)
     if(numericValue>1):
+        return numericValue/100
+    else:
+        return numericValue
+
+def obtainPercentageFieldValueWithPosNeg(percentageString):
+    numericValue = obtainNumericFieldValueWithPosNeg(percentageString)
+    if(numericValue>1 or
+           (numericValue<-1 and not numericValue==MISSING_DATA_FLOAT_VALUE)):
         return numericValue/100
     else:
         return numericValue

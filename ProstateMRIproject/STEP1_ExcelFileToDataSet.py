@@ -95,6 +95,22 @@ def getNumericValueFeature(columnCodeStr):
 def getPercentageValueFeature(columnCodeStr):
     return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainPercentageFieldValue)
 
+def getPercentageValueFeatureWithPostiveNegative(columnCodeStr):
+    return OBTAIN_FEATURE_COLUMN(columnCodeStr, DataSetLogic.obtainPercentageFieldValueWithPosNeg)
+
+"""
+Columns where if there is a "1" then consider 1
+If there is a missing indicator, indiciate missing data
+Otherwise 0
+"""
+def getYesNoFeature(columnCodeStr,missingDataStrings):
+    allPriorOutside = getAllStringsForCol(columnCodeStr)
+    priorOutsideValues = []
+    for listInd in range(len(allPriorOutside)):
+        priorOutsideValues.append(DataSetLogic.obtainResultYesNoValue(
+            allPriorOutside[listInd], missingDataStrings))
+    return np.array(priorOutsideValues)
+
 def getTimeSinceFeature(lastProcDateColumnCode,currentDateColumnCode):
     colAIvalues = getAllStringsForCol(lastProcDateColumnCode)
     colCvalues = getAllStringsForCol(currentDateColumnCode)
@@ -194,25 +210,14 @@ If string contains "no notes", "unknown" or "n/a" then missing data, make it -1
 else if string contains "1" then make value 1, meaning yes
 else make it "0" for no prior biopsy
 """
-allPriorOutside = getAllStringsForCol('L')
-#TESTFUNC_printUniqueEntries(allPriorOutside)
-priorOutsideValues =[]
-for listInd in range(len(allPriorOutside)):
-    priorOutsideValues.append(DataSetLogic.obtainResultYesNoValue(
-        allPriorOutside[listInd],['no notes','unknown','n/a']))
-priorOutsideFeature = np.array(priorOutsideValues)
+col_L_M_missingIndicators = ['no notes','unknown','n/a']
+priorOutsideFeature = getYesNoFeature('L',col_L_M_missingIndicators)
 
 """
 Column M: Prior Result
 Same logic as L
 """
-allPriorResult = getAllStringsForCol('M')
-#TESTFUNC_printUniqueEntries(allPriorResult)
-priorResult =[]
-for listInd in range(len(allPriorOutside)):
-    priorResult.append(DataSetLogic.obtainResultYesNoValue(
-        allPriorOutside[listInd],['no notes','unknown','n/a']))
-priorResultFeature = np.array(priorResult)
+priorResultFeature = getYesNoFeature('M',col_L_M_missingIndicators)
 
 
 """
@@ -641,11 +646,38 @@ colFIfeatureMatrix,colFIfeatureVector,colFIdictionary = \
     colEVstrings,missingDataStrings_colER_EV_FI)
 #NOTE: TODO: MAKE TEXT FILE OF COL_FI_DICTIONARY VARIABLE
 
-colFKfeature = get0_to_N_or_missingFeature('FK',1)
-colFLfeature = get0_to_N_or_missingFeature('FL',1)
-colFMfeature = get0_to_N_or_missingFeature('FM',1)
-colFNfeature = get0_to_N_or_missingFeature('FN',1)
+"""
+FK-FN
+If FK is 1, then FL-FN are 0
+If any of FL to FN are 1, then FK is 0
+"""
+colFLstrings = getAllStringsForCol('FL')
+colFMstrings = getAllStringsForCol('FM')
+colFNstrings = getAllStringsForCol('FN')
+colFKfeature0 = get0_to_N_or_missingFeature_missingIsZero('FK',1)
+colFLfeature0 = getYesNoFeature('FL',[])
+colFMfeature0 = CategoryFeatureLogic.columnFMlogic(colFMstrings)
+colFNfeature0 = CategoryFeatureLogic.columnFNlogic(colFNstrings)
+colFKfeature,colFLfeature,colFMfeature,colFNfeature = CategoryFeatureLogic.applyFKtoFNrule(
+    colFKfeature0,colFLfeature0,colFMfeature0,colFNfeature0)
+colFMfeatureMatrix = CategoryFeatureLogic.categoryToOneHotFeatureZeroStart(colFMfeature,3,
+                   DataSetLogic.MISSING_DATA_FLOAT_VALUE,
+                   DataSetLogic.MISSING_DATA_FLOAT_VALUE)
 
+colFOfeature = getDateOrMissingFeature('FO')
+
+
+"""
+Column FP, FQ: percentage value. If positive, then 51%
+    If negative then -51%
+"""
+colFPfeature = getPercentageValueFeatureWithPostiveNegative('FP')
+colFQfeature = getPercentageValueFeatureWithPostiveNegative('FQ')
+TESTFUNC_printUniqueEntries(colFPfeature)
+TESTFUNC_printUniqueEntries(colFQfeature)
 """
 ASK ROU ABOUT FO-FV
 """
+
+
+
