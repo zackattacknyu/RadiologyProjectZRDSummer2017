@@ -236,7 +236,7 @@ colNmatrix=getGleasonScoreMatrix('N')
 Column Q: Digital Rectal Exam score
 Column S: Pre-biopsy clinical information assay
 Column U: Pre-biopsy clinical information assay qualitative, positive or negative
-***GO BACK TO COLUMN V***
+Column V: value
 Column W: Assay
 Column Y: Assay Result
 Column Z: Risk of High Grade Caner
@@ -245,6 +245,7 @@ Column Z: Risk of High Grade Caner
 dreResultFeature = get0_to_N_or_missingFeature('Q',1)
 preBiopsyFeature = get0_to_N_or_missingFeature('S',1)
 colUfeature = get0_to_N_or_missingFeature('U',1)
+colVfeature = getNumericValueFeature('V')
 colWfeature = get0_to_N_or_missingFeature('W',1)
 colYfeature = get0_to_N_or_missingFeature('Y',1)
 riskOfHighGradeCancerFeature = get0_to_N_or_missingFeature('Z',1)
@@ -685,7 +686,225 @@ Column FT
 """
 allFTstrs = getAllStringsForCol('FT')
 colFTfeature = CategoryFeatureLogic.columnFTlogic(allFTstrs)
-TESTFUNC_printUniqueEntries(colFTfeature)
+
+"""
+_________________________________
+
+Below here the data set is assembled
+_________________________________
+"""
+
+DATA_SET_ARRAY_PRE=np.zeros((len(ageAtMriFeature),2000))
+currentColumnStartIndex=0
+infoFile = open('DATA_SET_COLUMN_INFORMATION.csv','w')
+infoFile.write('StartColumnIndex,NumCol,Information,ColumnsInExcelSpreadsheet\n')
+
+def addToDataSet(currentFeature, currentColStartInd, infoStr, colInfoStr):
+    if(len(currentFeature.shape)<2):
+        DATA_SET_ARRAY_PRE[:, currentColStartInd]=currentFeature
+        numCol=1
+    else:
+        numCol = currentFeature.shape[1]
+        DATA_SET_ARRAY_PRE[:, currentColStartInd:currentColStartInd + numCol]=currentFeature
+    currentLine = str(currentColStartInd) + "," + str(numCol) +\
+                  ","+infoStr+","+colInfoStr + "\n"
+    currentColStartInd= currentColStartInd + numCol
+    infoFile.write(currentLine)
+    return currentColStartInd
 
 
+"""
+This will give us Age at Time of MRI
+Column H contains that data
+If column H missing, do the following:
+    Column C is date of MRI, Column G is date of birth
+"""
+currentColumnStartIndex=addToDataSet(
+    ageAtMriFeature,currentColumnStartIndex,
+    "AgeAtMRI","C;G;H")
 
+"""
+This will give us the BMI of patients
+"""
+currentColumnStartIndex=addToDataSet(
+    bmiFeature,currentColumnStartIndex,
+    "BMI","J")
+
+"""
+This tells the race of patients
+    From column I
+Entries will be the following:
+    -1: unknown/other/etc
+    1: White
+    2: Black
+    3: Asian
+    4: Asian/Pacific
+    5: Amer Indian/Eskio
+"""
+currentColumnStartIndex=addToDataSet(
+    raceFeatureMatrix,currentColumnStartIndex,
+    "Race","I")
+
+"""
+Column L: Prior Outside Biopsy
+"""
+currentColumnStartIndex=addToDataSet(
+    priorOutsideFeature,currentColumnStartIndex,
+    "Prior Outside Biopsy","L")
+
+"""
+Column M: Prior Result
+Same logic as L
+"""
+currentColumnStartIndex=addToDataSet(
+    priorResultFeature,currentColumnStartIndex,
+    "Prior Result Feature","M")
+
+currentColumnStartIndex=addToDataSet(
+    colNmatrix,currentColumnStartIndex,
+    "Column N Matrix","N")
+
+"""
+Column Q: Digital Rectal Exam score
+Column S: Pre-biopsy clinical information assay
+Column U: Pre-biopsy clinical information assay qualitative, positive or negative
+Column V
+Column W: Assay
+Column Y: Assay Result
+Column Z: Risk of High Grade Caner
+    - 0,1,or missing
+"""
+currentColumnStartIndex=addToDataSet(
+    dreResultFeature,currentColumnStartIndex,
+    "Digitial Rectal Exam result","Q")
+currentColumnStartIndex=addToDataSet(
+    preBiopsyFeature,currentColumnStartIndex,
+    "Pre Biopsy Feature","S")
+currentColumnStartIndex=addToDataSet(
+    colUfeature,currentColumnStartIndex,
+    "Column U","U")
+currentColumnStartIndex=addToDataSet(
+    colVfeature,currentColumnStartIndex,
+    "Column V","V")
+currentColumnStartIndex=addToDataSet(
+    colWfeature,currentColumnStartIndex,
+    "Column W","W")
+currentColumnStartIndex=addToDataSet(
+    colYfeature,currentColumnStartIndex,
+    "Column Y","Y")
+currentColumnStartIndex=addToDataSet(
+    riskOfHighGradeCancerFeature,currentColumnStartIndex,
+    "Risk of High Grade Cancer","Z")
+
+currentColumnStartIndex=addToDataSet(
+    colAAfeatureMatrix,currentColumnStartIndex,
+    "Col AA","AA")
+currentColumnStartIndex=addToDataSet(
+    colABfeature,currentColumnStartIndex,
+    "Col AB","AB")
+currentColumnStartIndex=addToDataSet(
+    colADfeature,currentColumnStartIndex,
+    "Col AD","AD")
+
+currentColumnStartIndex=addToDataSet(
+    timeSincePSA,currentColumnStartIndex,
+    "Col AI - Most recent PSA","AI")
+
+currentColumnStartIndex=addToDataSet(
+    colAJfeature,currentColumnStartIndex,
+    "Col AJ","AJ")
+currentColumnStartIndex=addToDataSet(
+    colAKfeature,currentColumnStartIndex,
+    "Col AK","AK")
+currentColumnStartIndex=addToDataSet(
+    freePSApercentFeature,currentColumnStartIndex,
+    "FREE PSA %","AK;AL;AJ")
+
+currentColumnStartIndex=addToDataSet(
+    colBIfeature,currentColumnStartIndex,
+    "COLUMN BI","BI")
+currentColumnStartIndex=addToDataSet(
+    colBJfeature,currentColumnStartIndex,
+    "COLUMN BJ","BJ")
+currentColumnStartIndex=addToDataSet(
+    colBLfeature,currentColumnStartIndex,
+    "COLUMN BL","BL")
+currentColumnStartIndex=addToDataSet(
+    colBMfeature,currentColumnStartIndex,
+    "COLUMN BM","BM")
+
+currentColumnStartIndex=addToDataSet(
+    deviceFeatureMatrix,currentColumnStartIndex,
+    "DEVICE FEATURE","BP")
+
+
+colBRfeature
+colBSfeature
+colBTfeatureMatrix
+colBUfeatureMatrix
+columnBWfeature
+columnBXfeature
+columnBYfeature
+colBZfeature
+colCCfeature
+colCIfeature
+colCNfeature
+colCOfeature
+colCUfeature
+colCVfeature
+colCWfeature
+colCXfeature
+colCYfeatureMatrix
+colCZfeatureMatrix
+colDAfeature
+colDCfeature
+colDDfeatureMatrix
+colDEfeature
+colDFfeature
+colDGfeatureMatrix
+columnDHfeature #THIS IS A MATRIX
+columnDIfeature
+columnDKfeature
+colDLfeatureMatrix
+colDNfeature
+colDTfeature
+colDUfeature
+colDVfeature
+colDWfeature
+colDXfeature
+colDYfeature
+colDZfeature
+colEAfeature
+colEBfeature
+colECfeature
+colEDfeature
+colEEfeature
+colEFfeature
+colEGfeature
+colEHfeatureMatrix
+colERfeatureMatrix
+colESfeature
+colETfeature
+colEVfeatureMatrix
+colEWfeature
+colEYfeatureMatrix
+colFCfeature
+colFDfeature
+colFEfeature
+colFFfeature
+colFGfeature
+colFHfeature
+colFIfeatureMatrix
+colFKfeature
+colFLfeature
+colFMfeatureMatrix
+colFNfeature
+colFOfeature
+colFPfeature
+colFQfeature
+colFRfeature
+colFTfeature
+
+FINAL_DATA_SET=DATA_SET_ARRAY_PRE[:,currentColumnStartIndex]
+np.save("FINAL_DATA_SET.npy",FINAL_DATA_SET)
+infoFile.close()
