@@ -673,11 +673,19 @@ Column FP, FQ: percentage value. If positive, then 51%
 """
 colFPfeature = getPercentageValueFeatureWithPostiveNegative('FP')
 colFQfeature = getPercentageValueFeatureWithPostiveNegative('FQ')
-TESTFUNC_printUniqueEntries(colFPfeature)
-TESTFUNC_printUniqueEntries(colFQfeature)
+
 """
-ASK ROU ABOUT FO-FV
+column FR: numeric value
 """
+colFRfeature = getNumericValueFeature('FR')
+
+
+"""
+Column FT
+"""
+allFTstrs = getAllStringsForCol('FT')
+colFTfeature = CategoryFeatureLogic.columnFTlogic(allFTstrs)
+TESTFUNC_printUniqueEntries(colFTfeature)
 
 
 

@@ -115,3 +115,20 @@ def applyFKtoFNrule(colFK,colFL,colFM,colFN):
         elif(colFL[index0]==1 or colFM[index0]==1 or colFN[index0]==1):
             colFK[index0]=0
     return colFK,colFL,colFM,colFN
+
+"""
+If contains "negative" then 0
+If contains "positive" then 1
+Otherwise missing
+"""
+def columnFTlogic(columnVector):
+    columnFeatureValues = []
+    for value in columnVector:
+        value0=str(value)
+        if('negative' in value0):
+            columnFeatureValues.append(0)
+        elif('positive' in value0):
+            columnFeatureValues.append(1)
+        else:
+            columnFeatureValues.append(DataSetLogic.MISSING_DATA_FLOAT_VALUE)
+    return np.array(columnFeatureValues)
