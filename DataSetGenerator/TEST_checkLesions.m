@@ -6,6 +6,7 @@ In slice 128, there seems to be lesion and the shape of the lesion mask
     incorrect. 
 %fixed now
 %slice 127-129
+%Patient 22
 %}
 %currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/0affd33ex0270x4491x8dcbxca07f616f217/';
 
@@ -20,7 +21,7 @@ slice 106,129 has a lesion
 
 TO USE: SLICE 157, 158
 %}
-%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/2dbbde86x8ef8x4e32xb898xc23fcee3a04f/';
+currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/2dbbde86x8ef8x4e32xb898xc23fcee3a04f/';
 
 %{
 another example: 3b186cb7xd17ax43d8xbb62x597a42342edb
@@ -35,7 +36,7 @@ slice 97 has lesion
 
 TO USE: SLICE 97, 98
 %}
-currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/3ba57e08x84a0x4d49x8205x57a79d6cad98/';
+%currentFolder='D:/DATA/SPINE_LESIONS_GENERATED_DATA_SET_old/3ba57e08x84a0x4d49x8205x57a79d6cad98/';
 
 boneFile='DCM_DATA_BONE_SEG_MASK.mat';
 boneFileFull = strcat(currentFolder,boneFile);
@@ -78,33 +79,9 @@ fullFilePath1 = strcat(initFolder,initPtFolder,firstDCM);
 info=dicominfo(fullFilePath1);
 
 %%
-
-%{
-Note: This DOES NOT work. It is not a matter of flipping the up-down coords.
-Need to do more investigation into why there's an
-offset
-%}
-dcmDataWithLesionsUpped2 = dcmArrayHU;
-%dcmDataWithLesionsUpped2(flipud(lesionMaskVolume)>0)=2000;
-
-%Pixel Spacing is 1.3672
-%seeing if that is part of the reason for the offset
-%{
-for sli = 1:size(lesionMaskVolume,3)
-    for row=1:size(lesionMaskVolume,1)
-       for col=1:size(lesionMaskVolume,2)
-            if(lesionMaskVolume(row,col,sli)>0)
-               rowN = floor(row/1.3672);
-               colN = floor(col/1.3672);
-               dcmDataWithLesionsUpped2(rowN,colN,sli)=2000;
-            end
-       end
-    end
-end
-%}
-
 %flipping the slice coordinates to see if that is the problem
 %   IT WAS THE PROBLEM!
+%{
 numSlice=size(lesionMaskVolume,3);
 for sli = 1:size(lesionMaskVolume,3)
     for row=1:size(lesionMaskVolume,1)
@@ -116,3 +93,4 @@ for sli = 1:size(lesionMaskVolume,3)
     end
 end
 imtool3D(dcmDataWithLesionsUpped2);
+%}
